@@ -1,16 +1,23 @@
 from flask import Flask, render_template, request, session
 from flask_socketio import SocketIO, emit, join_room
+from flask_cors import CORS  # add this
 import platform
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "wubba lubba dub dub"
 
-socketio = SocketIO(app)
+CORS(app)  # add this
 
+socketio = SocketIO(app, cors_allowed_origins="*")  # modify this
+
+# ... the rest of your code ...
 users_in_room = {}
 rooms_sid = {}
 names_sid = {}
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route("/join", methods=["GET"])
 def join():
@@ -28,37 +35,49 @@ def on_connect():
     sid = request.sid
     print("New socket connected ", sid)
 
-
+#nhận địa chỉ phòng room_id từ client rồi trả về sid tương ứng về client 
+#thông qua sự kiện user-connect
 @socketio.on("join-room")
 def on_join_room(data):
     sid = request.sid
     room_id = data["room_id"]
     display_name = session[room_id]["name"]
-
     # register sid to the room
     join_room(room_id)
     rooms_sid[sid] = room_id
     names_sid[sid] = display_name
-
     # broadcast to others in the room
     print("[{}] New member joined: {}<{}>".format(room_id, display_name, sid))
     emit("user-connect", {"sid": sid, "name": display_name},
          broadcast=True, include_self=False, room=room_id)
-
     # add to user list maintained on server
     if room_id not in users_in_room:
         users_in_room[room_id] = [sid]
         emit("user-list", {"my_id": sid})  # send own id only
     else:
-        usrlist = {u_id: names_sid[u_id]
-                   for u_id in users_in_room[room_id]}
+        usrlist = {u_id: names_sid[u_id] for u_id in users_in_room[room_id]}
         # send list of existing users to the new member
         emit("user-list", {"list": usrlist, "my_id": sid})
         # add new member to user list maintained on server
         users_in_room[room_id].append(sid)
 
     print("\nusers: ", users_in_room, "\n")
+# Khi người dùng kết nối vào một phòng cụ thể
+@socketio.on('join-roomchat')
+def handle_join_room(data):
+    room = data['room_id']
+    display_name = session[room]["name"]
+    join_room(room)
+    emit('message', {'sender': 'System', 'message': f'{display_name} has entered the room.'}, room=room)
 
+# Khi người dùng gửi tin nhắn
+@socketio.on('send-message')
+def handle_send_message(data):
+    room = data['room_id']
+    sender = data['sender']
+    message = data['message']
+    print(f'{sender} sent message: {message}')
+    emit('message', {'sender': sender, 'message': message}, room=room)
 
 @socketio.on("disconnect")
 def on_disconnect():
@@ -93,5 +112,6 @@ def on_data(data):
     socketio.emit('data', data, room=target_sid)
 
 
-if any(platform.win32_ver()):
-    socketio.run(app, debug=True)
+
+if __name__ == "__main__":
+    socketio.run(app, debug=True,port=6868)

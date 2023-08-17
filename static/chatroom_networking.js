@@ -16,7 +16,7 @@ var mediaConstraints = {
         height: 360
     }
 };
-
+//hàm khởi tạo camera　và gán stream vào myVideo
 function startCamera()
 {
     navigator.mediaDevices.getUserMedia(mediaConstraints)
@@ -25,31 +25,34 @@ function startCamera()
         camera_allowed = true;
         setAudioMuteState(audioMuted);                
         setVideoMuteState(videoMuted);
-        //start the socketio connection
+        //start the socketio connection　
         socket.connect();
     })
     .catch((e)=>{
         console.log("getUserMedia Error! ", e);
     });
 }
-
+//hàm thông báo kết nối socket và gửi myRoomID về server vào sự kiện join-room　
 socket.on("connect", ()=>{
     console.log("socket connected....");
     socket.emit("join-room", {"room_id": myRoomID});
 });
+//nhận data từ server với data là sid và display_name　
 socket.on("user-connect", (data)=>{
     console.log("user-connect ", data);
-    let peer_id = data["sid"];
+    let peer_id = data["sid"];//gán sid vào biến peer_id 　
     let display_name = data["name"];
-    _peer_list[peer_id] = undefined; // add new user to user list
-    addVideoElement(peer_id, display_name);
+    _peer_list[peer_id] = undefined; // add new user to user list　
+    addVideoElement(peer_id, display_name);//sử dụng peer_id để tạo video kết nối  
 });
+
 socket.on("user-disconnect", (data)=>{
     console.log("user-disconnect ", data);
     let peer_id = data["sid"];
     closeConnection(peer_id);
     removeVideoElement(peer_id);
 });
+
 socket.on("user-list", (data)=>{
     console.log("user list recvd ", data);
     myID = data["my_id"];
@@ -66,7 +69,6 @@ socket.on("user-list", (data)=>{
         start_webrtc();
     }    
 });
-
 function closeConnection(peer_id)
 {
     if(peer_id in _peer_list)
@@ -78,7 +80,6 @@ function closeConnection(peer_id)
         delete _peer_list[peer_id]; // remove user from user list
     }
 }
-
 function log_user_list()
 {
     for(let key in _peer_list)
@@ -88,7 +89,6 @@ function log_user_list()
 }
 
 //---------------[ webrtc ]--------------------    
-
 var PC_CONFIG = {
     iceServers: [
         {
@@ -172,13 +172,11 @@ function handleNegotiationNeededEvent(peer_id)
     })
     .catch(log_error);
 } 
-
+//hàm nhận offer và gửi một câu trả lời tới người gửi với thông tin kết nối 
 function handleOfferMsg(msg)
 {   
     peer_id = msg['sender_id'];
-
     console.log(`offer recieved from <${peer_id}>`);
-    
     createPeerConnection(peer_id);
     let desc = new RTCSessionDescription(msg['sdp']);
     _peer_list[peer_id].setRemoteDescription(desc)

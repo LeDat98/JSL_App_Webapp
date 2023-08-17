@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- icon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <!-- socketio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- jQuery UI -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+        integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- google Material icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- custom css -->
+    <link rel="stylesheet" href="{{url_for('static', filename='custom.css')}}">
+    <script type="text/javascript">
+        var myRoomID = "{{room_id}}";
+        var myName = "{{display_name}}";
+        var audioMuted = "{{mute_audio}}" == "1";
+        var videoMuted = "{{mute_video}}" == "1";
+        console.log(">> {{mute_audio}}, {{mute_video}}", audioMuted, videoMuted);
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Chat [{{room_id}}]</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Phần video -->
+            <div class="col-md-8">
+                <div id="video_grid" class="video-grid"></div>
+                <video id="local_vid" autoplay muted></video>
+                <div id="button-container">
+                    <button id="mute_icon">mic</button>
+                    <button id="vid_mute_icon">videocam</button>
+                </div>
+            </div>
+            
+            <!-- Phần chat -->
+            <div class="col-md-4">
+                <div id="chat-window" class="border p-2">
+                    <div id="messages" class="mb-2"></div>
+                    <textarea id="message-input" class="form-control mb-2"></textarea>
+                    <button onclick="sendMessage()" class="btn btn-primary">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+        socket.emit('join-roomchat', {'room_id': myRoomID});
+
+        socket.on('message', data => {
+            const msgDiv = document.createElement("div");
+            msgDiv.textContent = data['sender'] + ": " + data['message'];
+            document.getElementById("messages").appendChild(msgDiv);
+        });
+
+        function sendMessage() {
+            const message = document.getElementById("message-input").value;
+            socket.emit('send-message', {'room_id': myRoomID, 'message': message, 'sender': myName});
+            document.getElementById("message-input").value = '';
+        }
+
+    </script>
+    
+    
+    <script src="{{url_for('static', filename='video-manager.js')}}"></script>
+    <script src="{{url_for('static', filename='chatroom_ui.js')}}"></script>
+    <script src="{{url_for('static', filename='chatroom_networking.js')}}"></script>
+</body>
+
+</html>

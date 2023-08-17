@@ -2,7 +2,8 @@ html,
 body {
   margin: 0;
   height: 100%;
-  overflow: hidden
+  overflow: hidden;
+  display: flex;
 }
 
 #local_vid {
@@ -13,9 +14,22 @@ body {
   position: fixed;
   bottom: 0;
   right: 0;
+  flex: 1; /* Chiếm 1 phần của tổng cộng 3 phần */
+  max-width: 33.33%; /* Giới hạn chiều rộng tối đa là 1/3 chiều rộng của viewport */
 }
 
 .video_grid {
+  flex: 2; /* Chiếm 2 phần của tổng cộng 3 phần */
+  max-width: 66.66%; /* Giới hạn chiều rộng tối đa là 2/3 chiều rộng của viewport */
   z-index: 1;
   position: relative;
+}
+
+#button-container {
+  position: fixed;  /* Đặt vị trí cố định so với viewport */
+  left: 50%;        /* Đặt button container vào giữa theo chiều ngang */
+  bottom: 10px;     /* Đặt button container 10px từ dưới cùng của trang */
+  transform: translateX(-50%);  /* Dịch chuyển theo chiều ngang để căn giữa */
+  display: flex;    /* Sắp xếp các buttons theo hàng ngang */
+  gap: 10px;        /* Tạo khoảng cách 10px giữa các buttons */
 }

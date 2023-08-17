@@ -3,37 +3,51 @@ var myVideo;
 document.addEventListener("DOMContentLoaded", (event) => {
     myVideo = document.getElementById("local_vid");
     myVideo.onloadeddata = () => { console.log("W,H: ", myVideo.videoWidth, ", ", myVideo.videoHeight); };
-    // var muteBttn = document.getElementById("bttn_mute");
-    // var muteVidBttn = document.getElementById("bttn_vid_mute");
+    var muteBttn = document.getElementById("mute_icon");
+    var muteVidBttn = document.getElementById("vid_mute_icon");
     // var callEndBttn = document.getElementById("call_end");
 
-    // muteBttn.addEventListener("click", (event)=>{
-    //     audioMuted = !audioMuted;
-    //     setAudioMuteState(audioMuted);        
-    // });    
-    // muteVidBttn.addEventListener("click", (event)=>{
-    //     videoMuted = !videoMuted;
-    //     setVideoMuteState(videoMuted);        
-    // });    
+    muteBttn.addEventListener("click", (event)=>{
+        // Nếu audio đang được kích hoạt thì tắt, và ngược lại.
+        audioMuted = !audioMuted;
+        setAudioMuteState(audioMuted);        
+    });    
+    muteVidBttn.addEventListener("click", (event)=>{
+        // Nếu video đang được kích hoạt thì tắt, và ngược lại.
+        videoMuted = !videoMuted;
+        setVideoMuteState(videoMuted);        
+    });    
     // callEndBttn.addEventListener("click", (event)=>{
     //     window.location.replace("/");
     // });
 
     // document.getElementById("room_link").innerHTML=`or the link: <span class="heading-mark">${window.location.href}</span>`;
+    // document.getElementById("mute_icon").addEventListener("click", function() {
+    //     // Nếu audio đang được kích hoạt thì tắt, và ngược lại.
+    //     audioMuted = !audioMuted;
+    //     setAudioMuteState(audioMuted);
+    // });
 
+    // document.getElementById("vid_mute_icon").addEventListener("click", function() {
+    //     // Nếu video đang được kích hoạt thì tắt, và ngược lại.
+    //     videoMuted = !videoMuted;
+    //     setVideoMuteState(videoMuted);
+    // });
 });
 
+//tạo ra một phần tử video mới với element_id làm ID và tự động phát video.
 function makeVideoElementCustom(element_id, display_name) {
     let vid = document.createElement("video");
     vid.id = "vid_" + element_id;
     vid.autoplay = true;
     return vid;
 }
-
+//thêm phần tử video mới vào trong khối có ID là "video_grid"
 function addVideoElement(element_id, display_name) {
     document.getElementById("video_grid").appendChild(makeVideoElementCustom(element_id, display_name));
     checkVideoLayout();
 }
+//xoá video với element_id tương ứng 
 function removeVideoElement(element_id) {
     let v = getVideoObj(element_id);
     if (v.srcObject) {

@@ -10,7 +10,7 @@ $('#local_vid').draggable({
 });
 
 function checkVideoLayout() {
-
+  // document.getElementById("video_grid").style.width = "66.66%";// chiếm 2/3 màn hình
   const video_grid = document.getElementById("video_grid");
   const videos = video_grid.querySelectorAll("video");
   const video_count = videos.length;
