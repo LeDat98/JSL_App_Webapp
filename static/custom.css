@@ -1,35 +1,293 @@
-html,
 body {
   margin: 0;
   height: 100%;
   overflow: hidden;
   display: flex;
+  
 }
 
-#local_vid {
-  height: 240px;
-  width: 150px;
-  object-fit: cover;
-  z-index: 100;
+#logo-img{
   position: fixed;
-  bottom: 0;
-  right: 0;
-  flex: 1; /* Chiếm 1 phần của tổng cộng 3 phần */
-  max-width: 33.33%; /* Giới hạn chiều rộng tối đa là 1/3 chiều rộng của viewport */
+  top: 50%;
+  left: 90%;
+  transform: translate(-50%,-50%);
+  max-width: 150px;
 }
 
-.video_grid {
-  flex: 2; /* Chiếm 2 phần của tổng cộng 3 phần */
-  max-width: 66.66%; /* Giới hạn chiều rộng tối đa là 2/3 chiều rộng của viewport */
-  z-index: 1;
+#send-button-container {
+  float: right; /* Sử dụng float: right để sắp xếp nút bên phải */
+  width: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#send-button {
+  /* Bạn có thể chỉ định kích thước vuông tại đây, ví dụ: */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#local_vid {
+bottom: 0%;
+left: 0%;    
+height: 320px;
+width: 426px;
+object-fit: cover;
+z-index: 1;
+position: fixed;
+bottom: 0;
+right: 0;
+flex: 1; 
+max-width: 33.33%;
+border-radius: 8px; 
+}
+#output_canvas {
+  position: absolute;
+  top:67%;
+  left:1%;
+  z-index: 1000;
+  border-radius: 8px;
+}
+#mask_canvas{
+  position: absolute;
+  top: 67%;
+  left: 1%;
+  width: 160px;
+  height: 160px;
+  z-index: 1001;
+  border-radius: 8px;
+  background: rgba(144, 238, 144, 0.5); /* Nền màu xanh lá nhạt với độ trong suốt 50% */
+  border: 2px solid limegreen; /* Viền màu xanh lá */
+  color: rgb(24, 148, 24); /* Màu chữ phù hợp với màu nền xanh lá trong */
+  display: flex;
+  align-items: flex-start; /* Căn chữ vào đầu ô */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  padding-top: 10px; /* Khoảng cách từ đỉnh ô đến chữ */
+}
+
+/* chỉnh video-grid sang bên trái chiếm 2/3 màn hình */
+#video_grid {
+flex: 2; /* Chiếm 2 phần của tổng cộng 3 phần */
+max-width: 100%; /* Giới hạn chiều rộng tối đa là 2/3 chiều rộng của viewport */
+display: flex; /* Sắp xếp các video theo hàng ngang */
+flex-wrap: wrap; /* Cho phép các video xuống dòng nếu không đủ chỗ */
+z-index: 1;
+}
+#Waiting_img_container{
+  height: 350px;
+  width: 350px;
+  position:absolute;
+  top:50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+#Waiting_img{
   position: relative;
+  width: 350px;
+  height: 350px;
 }
 
 #button-container {
   position: fixed;  /* Đặt vị trí cố định so với viewport */
-  left: 50%;        /* Đặt button container vào giữa theo chiều ngang */
   bottom: 10px;     /* Đặt button container 10px từ dưới cùng của trang */
-  transform: translateX(-50%);  /* Dịch chuyển theo chiều ngang để căn giữa */
   display: flex;    /* Sắp xếp các buttons theo hàng ngang */
   gap: 10px;        /* Tạo khoảng cách 10px giữa các buttons */
+  z-index: 10;
+  /* width:420px;
+  height: auto; */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(249,249,249,0.); /* Thay đổi màu background với độ mờ */
+  backdrop-filter: blur(10px); /* Thêm hiệu ứng mờ và nhám */
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: 0.5s;
+  text-align: center; /* Căn giữa các phần tử trong #roomWindow */
+}
+#chat-window {
+  position: absolute; /* Đặt vị trí tuyệt đối so với container cha */
+  right: 0; /* Đảm bảo nằm ở bên phải */
+  width: 20%; /* Chiếm 1/3 chiều rộng của viewport */
+  height: 100%; /* Chiều cao đầy đủ của viewport */
+  overflow-y: scroll; /* Cho phép cuộn nếu nội dung vượt quá chiều cao */
+  display: flex;
+  flex-direction: column; /* Sắp xếp nội dung theo chiều dọc */
+  background-color: #ffff; /* Màu nền nhạt */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  border-radius: 20px;
+  margin: 0px;
+  z-index: 2;
+}
+#toggle-button-container {
+  position: absolute;
+  width: 25px;
+  height: 40px;
+  z-index: 10;
+  top: 2%;
+  left: 5px;
+  /* background-color: #14ea3b9e; */
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+}
+#toggle-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+#chat-input-container {
+  width: 100%;
+  padding: 5px;
+  height: 8%;
+  position: relative;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  z-index: 3;
+  align-items: center; 
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  text-align: left; /* Dòng văn bản nhập từ trái sang phải */
+  display: flex; /* Sử dụng flexbox để căn chỉnh */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-content: flex-start; /* Căn trái theo chiều ngang */
+
+}
+#message-input {
+  float: left;
+  width: 80%;
+  height: 50px;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Bóng màu đen */
+  text-align: center;
+  border: 2px solid #33c4a7; /* Viền màu xanh lá */
+  background-color: transparent; /* Bên trong trong suốt */
+  padding: 5px;
+}
+
+#lowlayer-managertask{
+  width: 100%;
+  height: 75px;
+}
+#manager-task{
+  position: fixed;
+  width: 20%;
+  height: 95px;
+  background-color: #33c4a7;
+  border-radius: 16px;
+  left: 79.8%;
+  top:-3px;
+  margin: 3px;
+  z-index: 2;
+}
+/* phần messages có độ cao 80% so với chat-window */
+#messages {
+  position: relative;
+  z-index: 3;
+  height: 90%; /* Chiếm 80% chiều cao của chat-window */
+  width: 100%; /* Chiếm 100% chiều rộng của chat-window */
+  overflow-y: scroll; /* Cho phép cuộn nếu nội dung vượt quá chiều cao */
+  flex-grow: 1; /* Cho phép messages mở rộng để chiếm phần lớn không gian */
+  padding: 7px; /* Thêm padding cho nội dung */
+  background-color: aliceblue;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: 0.5s;
+}
+
+/* message-box mới tự động đẩy các message cũ lên phía trên để xuất hiện ngay phía trên chat-input-container */
+.message-box {
+float: left; /* Tin nhắn người nhận nằm bên trái */
+width: 100%; /* Giới hạn chiều rộng */
+align-items: center;
+}
+.message-box.sender {
+float: right; /* Tin nhắn người gửi nằm bên phải */
+width: 100%;
+}
+.sub-message-box.sender {
+background-color: #33c4a7; /* Màu xanh dương cho tin nhắn người gửi */
+float: right; /* Tin nhắn người gửi nằm bên phải */
+color: white;
+}
+.sub-message-box {
+text-align: center;
+min-width: 65px;
+max-width: 65%;
+position: relative; /* Đặt vị trí tương đối so với container cha */
+background-color: #ebebeb; /* Màu xanh lá */
+color: black; /* Màu chữ trắng */
+padding: 8px;
+margin: 5px;
+border-radius: 25px; /* Làm góc bo tròn */
+float: left; /* Tin nhắn người nhận nằm bên trái */
+font-size: 15px;
+box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.sub-avatar.sender{
+  background-color: #33c4a7; /* Màu xanh dương cho tin nhắn người gửi */
+  float: right; /* Tin nhắn người gửi nằm bên phải */
+  color: rgb(255, 255, 255); /* Màu chữ trắng */
+}
+.sub-avatar {
+  font-weight: bold;
+  text-align: center;
+  width: 30px;
+  height: 30px;
+  position: relative; /* Đặt vị trí tương đối so với container cha */
+  background-color: #ebebeb; /* Màu xanh lá */
+  color: rgb(0, 0, 0); /* Màu chữ trắng */
+  padding: 3px;
+  margin: 5px;
+  border-radius: 25px; /* Làm góc bo tròn */
+  float: left; /* Tin nhắn người nhận nằm bên trái */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.AI-img.sender{
+  float: right;
+}
+.AI-img{
+  font-weight: bold;
+  text-align: center;
+  width: 35px;
+  height: 35px;
+  position: relative; /* Đặt vị trí tương đối so với container cha */
+  padding: 3px;
+  margin: 2px;
+  border-radius: 25px; /* Làm góc bo tròn */
+  float: left; /* Tin nhắn người nhận nằm bên trái */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.sub-avatar-img{
+  font-weight: bold;
+  text-align: center;
+  width: 30px;
+  height: 30px;
+  position: relative; /* Đặt vị trí tương đối so với container cha */
+  padding: 3px;
+  margin: 5px;
+  border-radius: 25px; /* Làm góc bo tròn */
+  float: left; /* Tin nhắn người nhận nằm bên trái */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+#signal_container {
+  position: absolute;
+  width: 225px;
+  height: 50px;
+  top:62%;
+  left: 1%;
+  z-index: 1001;
+}
+#progress-container {
+  overflow: hidden; /* Ẩn phần không cần thiết của thanh tiến trình */
+  position: relative; /* Điều chỉnh vị trí của thanh tiến trình */
 }

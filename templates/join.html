@@ -1,204 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <!-- icon -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
     <!-- socketio -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
-
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
     <!-- jQuery UI -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
         integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
     <!-- Popper JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            height: 100%;
-            overflow: hidden;
-            display: flex;
-        }
-        #chat-window {
-            position: absolute; /* Đặt vị trí tuyệt đối so với container cha */
-            right: 0; /* Đảm bảo nằm ở bên phải */
-            width: 25%; /* Chiếm 1/3 chiều rộng của viewport */
-            height: 100%; /* Chiều cao đầy đủ của viewport */
-            overflow-y: scroll; /* Cho phép cuộn nếu nội dung vượt quá chiều cao */
-            display: flex;
-            flex-direction: column; /* Sắp xếp nội dung theo chiều dọc */
-            background-color: #d6d4d4; /* Màu nền nhạt */
-            border-left: 1px solid #ccc; /* Đường viền trái */
-        }
-        #toggle-button-container {
-            position: absolute;
-            width: 25px;
-            height: 40px;
-            z-index: 10;
-            top: 50%;
-            left: 5px;
-            border-radius: 5px;
-            background-color: #14ea3b9e;
-            border: none;
-            color: #333;
-            cursor: pointer;
-        }
-        #toggle-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: none;
-            color: #333;
-            cursor: pointer;
-        }
-        #chat-input-container {
-            width: 100%; /* Chiếm 100% chiều rộng của chat-window */
-            padding: 10px; /* Thêm padding cho nội dung */
-            height: 10%; /* Chiếm 10% chiều cao của chat-window */
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            display: flex; /* Sử dụng flex để sắp xếp các thành phần bên trong */
-            align-items: center; /* Căn giữa theo chiều dọc */
-        }
-        /* phần messages có độ cao 80% so với chat-window */
-        #messages {
-            position: absolute;
-            z-index: 1;
-            height: 90%; /* Chiếm 80% chiều cao của chat-window */
-            width: 100%; /* Chiếm 100% chiều rộng của chat-window */
-            overflow-y: scroll; /* Cho phép cuộn nếu nội dung vượt quá chiều cao */
-            flex-grow: 1; /* Cho phép messages mở rộng để chiếm phần lớn không gian */
-            padding: 15px; /* Thêm padding cho nội dung */
-        }
-        #chat-input-container {
-            width: 100%;
-            padding: 10px;
-            height: 10%;
-            position: absolute;
-            right: 0;
-            bottom: 0;
-        }
-
-        #message-input {
-            float: left; /* Sử dụng float: left để sắp xếp nút và textarea bên trái */
-            width: 80%;
-        }
-
-        #send-button-container {
-            float: right; /* Sử dụng float: right để sắp xếp nút bên phải */
-            width: 20%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-
-        #send-button {
-            /* Bạn có thể chỉ định kích thước vuông tại đây, ví dụ: */
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #local_vid {
-        bottom: 0%;
-        left: 0%;    
-        height: 350px;
-        width: 300px;
-        object-fit: cover;
-        z-index: 1;
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        flex: 1; 
-        max-width: 33.33%; 
-        }
-        /* chỉnh video-grid sang bên trái chiếm 2/3 màn hình */
-        #video_grid {
-        flex: 2; /* Chiếm 2 phần của tổng cộng 3 phần */
-        max-width: 75%; /* Giới hạn chiều rộng tối đa là 2/3 chiều rộng của viewport */
-        display: flex; /* Sắp xếp các video theo hàng ngang */
-        flex-wrap: wrap; /* Cho phép các video xuống dòng nếu không đủ chỗ */
-        }
-
-        #button-container {
-        position: fixed;  /* Đặt vị trí cố định so với viewport */
-        left: 50%;        /* Đặt button container vào giữa theo chiều ngang */
-        bottom: 10px;     /* Đặt button container 10px từ dưới cùng của trang */
-        transform: translateX(-50%);  /* Dịch chuyển theo chiều ngang để căn giữa */
-        display: flex;    /* Sắp xếp các buttons theo hàng ngang */
-        gap: 10px;        /* Tạo khoảng cách 10px giữa các buttons */
-        }
-        /* message-box mới tự động đẩy các message cũ lên phía trên để xuất hiện ngay phía trên chat-input-container */
-        .message-box {
-        float: left; /* Tin nhắn người nhận nằm bên trái */
-        width: 100%; /* Giới hạn chiều rộng */
-        }
-        .message-box.sender {
-        float: right; /* Tin nhắn người gửi nằm bên phải */
-        width: 100%;
-        }
-        .sub-message-box.sender {
-        background-color: #0084ff; /* Màu xanh dương cho tin nhắn người gửi */
-        float: right; /* Tin nhắn người gửi nằm bên phải */
-        }
-        .sub-message-box {
-        position: relative; /* Đặt vị trí tương đối so với container cha */
-        background-color: #4CAF50; /* Màu xanh lá */
-        color: white; /* Màu chữ trắng */
-        padding: 8px;
-        margin: 5px;
-        border-radius: 5px; /* Làm góc bo tròn */
-        float: left; /* Tin nhắn người nhận nằm bên trái */
-        }
-    </style>
     <!-- google Material icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
     <!-- custom css -->
-    <!-- <link rel="stylesheet" href="{{url_for('static', filename='custom.css')}}"> -->
+    <link rel="stylesheet" href="{{url_for('static', filename='custom.css')}}">
     <script type="text/javascript">
-        var myRoomID = "{{room_id}}";
-        var myName = "{{display_name}}";
+        window.myRoomID = "{{room_id}}";
+        window.myName = "{{display_name}}";
         var audioMuted = "{{mute_audio}}" == "1";
         var videoMuted = "{{mute_video}}" == "1";
         console.log(">> {{mute_audio}}, {{mute_video}}", audioMuted, videoMuted);
+        console.log("myName",window.myName);
     </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Chat [{{room_id}}]</title>
 </head>
-
 <body>
-    
     <div id="video_grid" class="video-grid"></div>
+    <div id = "Waiting_img_container">
+        <img id ="Waiting_img" src = "{{url_for('static', filename='images/lounge.gif')}}" >
+    </div>
+    <video id="input_video" style="display:none" ></video>
     <video id="local_vid" autoplay muted></video>
+    <div id ="mask_canvas" style="display: none;">文字認識領域</div>
+    
+    <canvas id="output_canvas" ></canvas>
     <div id="button-container">
+        <button id="start-button">Start Landmarking</button>
+        <button id="stop-button">Stop Landmarking</button>
         <button id="mute_icon">mic</button>
         <button id="vid_mute_icon">videocam</button>
     </div>
-    <div id="chat-window" class="border p-2">
+    <div id ="signal_container" style="display: none;">
+        <div id="signal">
+            <div id="sub_signal">Waiting for signal</div>
+            <div id="progress-container" style="height: 20px; width: 100%; border: 2px solid black;">
+                <div id="progress-bar" style="height: 100%; width: 0%; background-color: green;"></div>
+            </div>
+        </div>
+    </div>
+    <div id="chat-window" >
+        <div id = "manager-task">
+            
+        </div>
         <div id="toggle-button-container"> <!-- Nút ẩn hiện chat window -->
         <button id="toggle-button" onclick="toggleChatWindow()" class="btn">
             <span class="material-icons">arrow_forward_ios</span> <!-- Biểu tượng mũi tên -->
         </button>
         </div>
-        <div id="messages" class="mb-2" style="display:block;"></div>
+        <div id = 'lowlayer-managertask'></div>
+        <div id="messages" class="mb-2" style="display:block;">
+            <div id="sticky-div">
+                <img id='logo-img' style="display: block;" src="{{url_for('static', filename='images/chatbot2.png')}}">
+              </div>
+        </div>
         <div id="chat-input-container">
             <textarea id="message-input" ></textarea>
             <div id="send-button-container">
@@ -207,69 +81,41 @@
                 </button>
             </div>
         </div>
-        
     </div>
-
     <script src="{{url_for('static', filename='video-manager.js')}}"></script>
     <script src="{{url_for('static', filename='chatroom_ui.js')}}"></script>
     <script src="{{url_for('static', filename='chatroom_networking.js')}}"></script>
+    <script type="module" src="{{url_for('static', filename='main2.js')}}"></script>
+    <script src="{{url_for('static', filename='chatbox.js')}}"></script>
+    <script src="{{url_for('static',filename='support_js/drawing_utils.js')}}" crossorigin="anonymous"></script>
+    <script src="{{url_for('static',filename='support_js/hands.js')}}" crossorigin="anonymous"></script>
+    <script src="{{url_for('static',filename='support_js/vision_bundle.js')}}" crossorigin="anonymous"></script>
+    <script src="{{url_for('static',filename='support_js/socket.io.js')}}"></script>
+    <script src="{{url_for('static',filename='support_js/socket.io.min.js')}}"></script>    
     <script>
-        socket.emit('join-roomchat', {room_id: myRoomID});
-
-        socket.on('message', data => {
-        // Tạo div cha
-        const msgDiv = document.createElement("div");
-        msgDiv.className = data['sender'] === myName ? "message-box sender" : "message-box";
-        // Tạo div con
-        const subMsgDiv = document.createElement("div");
-        subMsgDiv.className = data['sender'] === myName ? "sub-message-box sender" : "sub-message-box";
-        subMsgDiv.textContent = data['sender'] + ": " + data['message'];
-        // Nối div con với div cha
-        msgDiv.appendChild(subMsgDiv);
-        // Thêm div cha vào phần tử có id là "messages"
-        const messagesDiv = document.getElementById("messages");
-        messagesDiv.appendChild(msgDiv);
-
-        // Cuộn đến phần cuối của messagesDiv
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-        });
-        //hàm xử lý việc nhấp vào nút gửi tin nhắn
-        function sendMessage() {
-            const message = document.getElementById("message-input").value;
-            socket.emit('send-message', {'room_id': myRoomID, 'message': message, 'sender': myName});
-            document.getElementById("message-input").value = '';
-            // Cuộn đến phần cuối của messagesDiv
-            const messagesDiv = document.getElementById("messages");
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        socket.on('sentence', function(msg) {
+        if (msg.counter) {
+            if (msg.counter == '手話の認識をお待ちしています。' || msg.counter == '文字を認識中'){
+                if (msg.counter == '手話の認識をお待ちしています。' ){
+                document.getElementById('sub_signal').innerText = msg.counter;
+                document.getElementById('progress-bar').style.width = 0 + '%';
+            }else{
+                document.getElementById('sub_signal').innerText = msg.counter;
+                document.getElementById('progress-bar').style.width = 0 + '%';
+            }
+            }
+            else{
+            var frames_per_detect = 20;//số frames cần thiết trên một lần nhận diện 
+            var percentage = (100 / frames_per_detect) * msg.counter;
+            document.getElementById('sub_signal').innerText = percentage + '%';
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            }
         }
-        document.getElementById("message-input").addEventListener("keydown", function(e) {
-        if (e.key === "Enter" && !e.shiftKey) { // Nếu nhấn Enter mà không giữ Shift
-        e.preventDefault(); // Ngăn không cho phép xuống dòng
-        sendMessage(); // Gửi tin nhắn
+        else {
+            console.log("msg.counter is undefined!");
+            // Xử lý trường hợp msg.sentence không được xác định tại đây
         }
         });
-        // hàm xử lý việc nhấp vào nút thu cửa sổ chat và mở cửa sổ chat trở lại 
-        function toggleChatWindow() {
-        var chatWindow = document.getElementById('chat-window');
-        var videoGrid = document.getElementById('video_grid');
-        var messagesDiv = document.getElementById('messages');
-        var chatinputcontainer = document.getElementById('chat-input-container');   
-        if (chatWindow.style.width === '1%') {
-            chatWindow.style.width = '25%'; // Đặt lại giá trị ban đầu cho chatWindow
-            videoGrid.style.maxWidth = '75%'; // Đặt lại giá trị ban đầu cho videoGrid
-            messagesDiv.style.visibility = 'visible'; // Hiển thị messagesDiv 
-            chatinputcontainer.style.visibility = 'visible';// Hiển thị chatinputcontainer
-            document.getElementById("toggle-button").innerHTML = '<span class="material-icons">arrow_forward_ios</span>';
-        } else {
-            chatWindow.style.width = '1%'; // Thu nhỏ chatWindow xuống 1.5%
-            videoGrid.style.maxWidth = '99%'; // Mở rộng videoGrid lên 98.5%
-            messagesDiv.style.visibility = 'hidden';// Ẩn messagesDiv
-            chatinputcontainer.style.visibility = 'hidden'; // Ẩn chatinputcontainer
-            document.getElementById("toggle-button").innerHTML = '<span class="material-icons">arrow_back_ios</span>';
-        }
-    }
-
     </script>
 </body>
 

@@ -1,7 +1,7 @@
 
 $('#local_vid').draggable({
   containment: 'body',
-  zIndex: 10000,
+  zIndex: 99,
   // set start position at bottom right
   start: function (event, ui) {
     ui.position.left = $(window).width() - ui.helper.width();

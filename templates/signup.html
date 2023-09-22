@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <title> login</title>
+        <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        #particles-js {
+            width: 100%;
+            height:  100vh;
+            background-color: blueviolet;
+        }
+        body {
+            background-color: #000;
+        }
+        #windowtitle {
+            margin: -5px;
+        }
+        #roomWindow {
+            /* display: none; */
+            position: fixed;
+            width: 300px;
+            height: 250px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(249,249,249,0.5); /* Thay đổi màu background với độ mờ */
+            backdrop-filter: blur(10px); /* Thêm hiệu ứng mờ và nhám */
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.5s;
+            text-align: center; /* Căn giữa các phần tử trong #roomWindow */
+            color: white; /* Thêm màu chữ là trắng */
+        }
+        #Signup_button{
+            position: absolute;
+            top:85%;
+            left: 45%;
+            transform: translate(-50%,-50%);
+        
+        }
+        #Signup_button {
+            font-size: 15px; /* Giảm kích thước font */
+            padding: 7px; /* Giảm padding */
+            margin: 10px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #Signup_botton:hover {
+            background-color: #357838;
+        }
+        #name, #email, #password{
+            width: 200px;
+            height: 30px;
+            margin: 5px;
+            padding: 3px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+
+        }
+        #inputbox_container{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        </style>
+    </head>
+    <body>
+        <div id="particles-js">
+        <div id="roomWindow">
+            <h1 id = "windowtitle">Signup</h1>
+            
+            <form action='/signup' method="POST">
+                <div id="inputbox_container">
+                <input id ="name" type="text" name="name" placeholder="Enter your full name">
+                <input id ="email" type="text" name="email" placeholder="Enter your email"><br>
+                <input id ="password" type="password" name="password" placeholder="Enter your password">
+                <a href="/" >Connect to the login page?</a><br>
+                </div>
+                <button type="submit" id ="Signup_button">Signup</button>
+            </form>
+        </div> 
+        </div>
+        <script src="{{url_for('static', filename='particles.js')}}"></script>
+        <script src="{{url_for('static', filename='app.js')}}"></script>
+    </body>
+</html>
+<body>
+    <form action="/signup" method="post">
+        <input type="text" name="name" placeholder="Name">
+        <input type="text" name="email" placeholder="Email">
+        <input type="password" name="password" placeholder="Password">
+        <button type="submit">Sign Up</button>
+    </form>
+</body>
+</html>

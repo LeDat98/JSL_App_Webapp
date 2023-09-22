@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create or Join Room</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        #particles-js {
+            width: 100%;
+            height:  100vh;
+            background-color: blueviolet;
+        }
+
+        body {
+            background-color: #000;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            text-align: center; /* Đảm bảo các label được căn giữa */
+        }
+
+        #createRoomButton, #joinRoomButton {
+            font-size: 15px; /* Giảm kích thước font */
+            padding: 7px; /* Giảm padding */
+            margin: 10px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #createRoomButton:hover, #joinRoomButton:hover {
+            background-color: #357838;
+        }
+
+
+        .center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            height: fit-content;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Định dạng cho nút công tắc */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px; /* Giảm kích thước nút */
+            height: 22px; /* Giảm kích thước nút */
+            margin: auto; /* Căn giữa nút */
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #2ab934; /* Thay đổi màu sắc ban đầu */
+            transition: .4s;
+            border-radius: 22px; /* Giảm bán kính bo góc */
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; /* Giảm kích thước chấm tròn */
+            width: 18px; /* Giảm kích thước chấm tròn */
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #ca2222;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(18px); /* Điều chỉnh dựa theo kích thước mới */
+        }
+
+        #confirmButton {
+            font-size: 18px; /* Font to hơn */
+            padding: 10px; /* Padding lớn hơn để nút to hơn */
+            margin-top: 25px;
+            margin-left: 75px;
+            margin-right: 75px; /* tạo khoảng cách giữa nút và các phần tử trên nó */
+            background-color: #4CAF50; /* Màu nền cho nút */
+            color: white; /* Màu chữ */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #confirmButton:hover {
+            background-color: #45a049; /* Màu khi di chuột qua */
+        }
+
+        /* Thêm thuộc tính cho nút switch */
+        .slider:after {
+            content: 'ON';
+            color: white;
+            display: block;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 75%;
+            font-size: 10px;
+            font-family: Verdana, sans-serif;
+        }
+
+        input:checked + .slider:after {
+            left: 25%;
+            content: 'OFF';
+        }
+        #roomWindow {
+
+            position: fixed;
+            width: 300px;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(249,249,249,0.); /* Thay đổi màu background với độ mờ */
+            backdrop-filter: blur(10px); /* Thêm hiệu ứng mờ và nhám */
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.5s;
+            text-align: center; /* Căn giữa các phần tử trong #roomWindow */
+            color: white; /* Thêm màu chữ là trắng */
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="particles-js">
+        <div id="roomWindow">
+            <h1 id="windowTitle">Join Room</h1>
+            <label for="room_id">Room ID:</label>
+            <input type="text" id="room_id" placeholder="Enter Room ID" readonly>
+            
+            <label>Mute Audio:</label>
+            <label class="switch">
+                <input type="checkbox" onclick="toggleMute('mute_audio')">
+                <span class="slider"></span>
+            </label>
+
+            <label>Mute Video:</label>
+            <label class="switch">
+                <input type="checkbox" onclick="toggleMute('mute_video')">
+                <span class="slider"></span>
+            </label>
+
+            <button id="confirmButton" onclick="confirmAction()">Join Room</button>
+        </div>
+    </div>  
+    <script src="{{url_for('static', filename='particles.js')}}"></script>
+    <script src="{{url_for('static', filename='app.js')}}"></script>
+    <script>
+        
+        let muteStatus = {
+            mute_audio: 0,
+            mute_video: 0
+        };
+        function toggleMute(control) {
+            console.log('Toggle mute for', control);
+            muteStatus[control] = 1 - muteStatus[control];
+            const checkbox = document.querySelector(`input[onclick="toggleMute('${control}')]`);
+            checkbox.checked = muteStatus[control] === 0 ? false : true;
+        }
+        // Phân tích URL để lấy giá trị của room_id
+        function getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+        const results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+        // Lấy giá trị của room_id và đưa vào thẻ input
+        const roomId = getParameterByName('room_id');
+        if (roomId) {
+        document.getElementById('room_id').value = roomId;
+        }
+        function confirmAction() {
+            const room_id = encodeURIComponent(document.getElementById('room_id').value);
+            const mute_audio = muteStatus.mute_audio;
+            const mute_video = muteStatus.mute_video;
+            const url = `https://27.81.58.107:5000/${document.getElementById('confirmButton').getAttribute('action')}?room_id=${room_id}&mute_audio=${mute_audio}&mute_video=${mute_video}`;
+            window.location.href = url;
+        }
+        document.getElementById("confirmButton").onclick = function() {
+            this.setAttribute('action', 'join');
+            confirmAction(); // Đảm bảo hàm confirmAction() được gọi
+        };
+    </script>
+</body>
+</html>
