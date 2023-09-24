@@ -16,19 +16,19 @@ from collections import Counter
 tf.config.set_visible_devices([], 'GPU')
 app = Flask(__name__, static_folder='static')
 config = {
-    "apiKey": "AIzaSyBDbJTXCtLmhkiIWX1FGn4k7QIoKthaN9I",
-    "authDomain": "chatvideo-871b4.firebaseapp.com",
-    "projectId": "chatvideo-871b4",
-    "storageBucket": "chatvideo-871b4.appspot.com",
-    "messagingSenderId": "516775972611",
-    "appId": "1:516775972611:web:6373f82fb6c5aa8ab66336",
-    "measurementId": "G-04E3YCCNHH",
-    'databaseURL':'https://chatvideo-871b4-default-rtdb.asia-southeast1.firebasedatabase.app'
+    "apiKey": "",
+    "authDomain": "",
+    "projectId": "",
+    "storageBucket": "",
+    "messagingSenderId": "",
+    "appId": "",
+    "measurementId": "",
+    'databaseURL':''
 }
 firebase = pyrebase.initialize_app(config=config)
 auth = firebase.auth()
 db = firebase.database()
-app.config['SECRET_KEY'] = "wubba lubba dub dub"
+app.config['SECRET_KEY'] = "SECRET_KEY"
 
 CORS(app)  
 
@@ -46,17 +46,15 @@ sentence = []
 sentence_char = []
 old_char = None
 right_hand_landmarks_X_Y = []
-# labels_dict = {0: 'A', 1: 'I', 2: 'U'}
 
-labels_dict = {0: 'た', 1: 'な', 2: 'か',3:'Enter',4:'な'}
+labels_dict = {0: 'た', 1: 'な', 2: 'か',3:'Enter',4:'Delete'}
 threshold = 0.9
 #Load model for detect character
 model_dict = pickle.load(open('./modelv2.p', 'rb'))
 model_char = model_dict['model']
 # Actions that we try to detect
-# actions = np.array(['GOOD_EVENING','HELLO','Imsorry','THANKS'])
 actions = np.array(['はじめまして', 'こんにちは', '私の名前は', 'ありがとうございます', 'と申します', 'よろしくおねがいします。'])
-# actions = np.array(['NAME','TOMOUSHIMASU','YOROSHIKU'])
+
 
 model = Sequential()
 model.add(LSTM(64, return_sequences=True, activation='tanh', input_shape=(20,225)))
@@ -69,7 +67,6 @@ model.add(Dense(actions.shape[0], activation='softmax'))
 
 model.load_weights('webappmodelv3.h5')
 json_counter = 0
-
 
 def most_frequent_element(arr):
     # Đếm số lần xuất hiện của mỗi phần tử trong mảng
