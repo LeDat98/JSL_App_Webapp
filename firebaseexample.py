@@ -1,21 +1,21 @@
 import pyrebase
 
 config = {
-    "apiKey": "AIzaSyBDbJTXCtLmhkiIWX1FGn4k7QIoKthaN9I",
-    "authDomain": "chatvideo-871b4.firebaseapp.com",
-    "projectId": "chatvideo-871b4",
-    "storageBucket": "chatvideo-871b4.appspot.com",
-    "messagingSenderId": "516775972611",
-    "appId": "1:516775972611:web:6373f82fb6c5aa8ab66336",
-    "measurementId": "G-04E3YCCNHH",
-    'databaseURL':'https://chatvideo-871b4-default-rtdb.asia-southeast1.firebasedatabase.app'
+    "apiKey": "",
+    "authDomain": "",
+    "projectId": "",
+    "storageBucket": "",
+    "messagingSenderId": "",
+    "appId": "",
+    "measurementId": "",
+    'databaseURL':''
 }
 
 firebase = pyrebase.initialize_app(config=config)
 
 auth = firebase.auth()
 db = firebase.database()
-email = 'leducdat231197@gmail.com'
+email = ''
 password = ''
 #signup acount
 # auth.create_user_with_email_and_password(email, password)
